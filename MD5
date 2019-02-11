@@ -1,0 +1,15 @@
+cb06d195af40613821da13b56f0583db *DESCRIPTION
+491bedca65dac48ccd91a345312978b9 *NAMESPACE
+d34dfbf7ef87e7c19f370e94d870494f *NEWS.md
+df1ec59277c3ee4071c81d2c40a99228 *R/leiden.R
+4893358925b926246075c04b7eaf6149 *build/vignette.rds
+ebf5841043f2f68d6f79fdba40f9d31e *inst/CITATION
+9b264b5fd6bff07a59fa782dcbb5c3bb *inst/WORDLIST
+82c8d5789d9a1c0e1673a41ab9496d68 *inst/doc/run_leiden.R
+27f8645fb01ae472fb50f22fa228d18d *inst/doc/run_leiden.Rmd
+012686f9a0bf1f0e30cd2b7428349a3d *inst/doc/run_leiden.html
+0ebd1d16c6601e1e491d746f12b5d3fc *man/leiden.Rd
+0622a97a2aaa3c342f09636052c2d7f5 *tests/spelling.R
+0673a2cb3b3bbd102bab6fbafe799fe7 *tests/testthat.R
+2e1d5454a8a5b7b33b48d621277b5830 *tests/testthat/test_leiden.R
+27f8645fb01ae472fb50f22fa228d18d *vignettes/run_leiden.Rmd
