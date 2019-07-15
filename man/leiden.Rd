@@ -4,23 +4,25 @@
 \alias{leiden}
 \title{Run Leiden clustering algorithm}
 \usage{
-leiden(adj_mat, partition_type = c("RBConfigurationVertexPartition",
+leiden(object, partition_type = c("RBConfigurationVertexPartition",
   "ModularityVertexPartition", "RBERVertexPartition", "CPMVertexPartition",
   "MutableVertexPartition", "SignificanceVertexPartition",
   "SurpriseVertexPartition"), initial_membership = NULL,
   weights = NULL, node_sizes = NULL, resolution_parameter = 1)
 }
 \arguments{
-\item{adj_mat}{An adjacency matrix compatible with \code{\link[igraph]{igraph}} object.}
+\item{object}{An adjacency matrix compatible with \code{\link[igraph]{igraph}} object or an input graph as an \code{\link[igraph]{igraph}} object (e.g., shared nearest neighbours).}
 
 \item{partition_type}{Type of partition to use. Defaults to RBConfigurationVertexPartition. Options include: ModularityVertexPartition, RBERVertexPartition, CPMVertexPartition, MutableVertexPartition, SignificanceVertexPartition, SurpriseVertexPartition (see the Leiden python module documentation for more details)}
 
 \item{initial_membership, weights, node_sizes}{Parameters to pass to the Python leidenalg function (defaults initial_membership=None, weights=None).}
 
 \item{resolution_parameter}{A parameter controlling the coarseness of the clusters}
+
+\item{...}{Arguments to be passed to methods}
 }
 \value{
-A parition of clusters as a vector of integers
+A partition of clusters as a vector of integers
 }
 \description{
 Implements the Leiden clustering algorithm in R using reticulate to run the Python version. Requires the python "leidenalg" and "igraph" modules to be installed. Returns a vector of partition indices.
@@ -58,8 +60,31 @@ table(partition)
 adjacency_matrix[adjacency_matrix == 1] <- weights
 partition <- leiden(adjacency_matrix)
 table(partition)
-}
 
+
+# generate (unweighted) igraph object in R
+library("igraph")
+adjacency_matrix[adjacency_matrix > 1] <- 1
+snn_graph <- graph_from_adjacency_matrix(adjacency_matrix)
+partition <- leiden(snn_graph)
+table(partition)
+
+# generate (weighted) igraph object in R
+library("igraph")
+adjacency_matrix[adjacency_matrix >= 1] <- weights
+snn_graph <- graph_from_adjacency_matrix(adjacency_matrix, weighted = TRUE)
+partition <- leiden(snn_graph)
+table(partition)
+
+# pass weights to python leidenalg
+adjacency_matrix[adjacency_matrix >= 1 ] <- 1
+snn_graph <- graph_from_adjacency_matrix(adjacency_matrix, weighted = NULL)
+weights <- sample(1:10, sum(adjacency_matrix!=0), replace=TRUE)
+partition <- leiden(snn_graph, weights = weights)
+table(partition)
+
+# run only if python is available (for testing)
+}
 
 }
 \keyword{graph}

@@ -40,15 +40,11 @@ graph_object
 ## ---- warning=FALSE, message=FALSE---------------------------------------
 plot(graph_object, vertex.color = "grey75")
 
-## ---- eval=FALSE---------------------------------------------------------
-#  library("igraph")
-#  adjacency_matrix <- igraph::as_adjacency_matrix(graph_object)
-
 ## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"----
 #  partition <- c(rep(1, 20), rep(2, 20), rep(3, 20))
 
 ## ---- eval=module--------------------------------------------------------
-partition <- leiden(adjacency_matrix)
+partition <- leiden(graph_object)
 
 ## ------------------------------------------------------------------------
 table(partition)
@@ -60,44 +56,58 @@ plot(graph_object, vertex.color = node.cols)
 
 ## ---- eval=module--------------------------------------------------------
 #run with defaults
-  partition <- leiden(adjacency_matrix)
+  partition <- leiden(graph_object)
 
 
 #run with ModularityVertexPartition"
-  partition <- leiden(adjacency_matrix, partition_type = "ModularityVertexPartition")
+  partition <- leiden(graph_object, partition_type = "ModularityVertexPartition")
 
 
 #run with resolution parameter
-  partition <- leiden(adjacency_matrix, resolution_parameter = 0.95)
+  partition <- leiden(graph_object, resolution_parameter = 0.95)
 
 ## ---- warning=FALSE, message=FALSE, eval=module--------------------------
-partition <- leiden(adjacency_matrix, resolution_parameter = 0.5)
+partition <- leiden(graph_object, resolution_parameter = 0.5)
 node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(graph_object, vertex.color = node.cols)
 
 ## ---- warning=FALSE, message=FALSE, eval=module--------------------------
-partition <- leiden(adjacency_matrix, resolution_parameter = 1.8)
+partition <- leiden(graph_object, resolution_parameter = 1.8)
 node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(graph_object, vertex.color = node.cols)
 
 ## ---- warning=FALSE, message=FALSE, eval=module--------------------------
-#generate example weights
-weights <- sample(1:10, sum(adjacency_matrix!=0), replace=TRUE)
-partition <- leiden(adjacency_matrix, weights = weights)
+# generate (unweighted) igraph object in R
+library("igraph")
+adjacency_matrix[adjacency_matrix > 1] <- 1
+snn_graph <- graph_from_adjacency_matrix(adjacency_matrix)
+partition <- leiden(snn_graph)
 table(partition)
 
 ## ---- warning=FALSE, message=FALSE, eval=module--------------------------
-#generate example weighted matrix
-adjacency_matrix[adjacency_matrix == 1] <- weights
-partition <- leiden(adjacency_matrix)
+# pass weights to python leidenalg
+adjacency_matrix[adjacency_matrix >= 1 ] <- 1
+snn_graph <- graph_from_adjacency_matrix(adjacency_matrix, weighted = NULL)
+weights <- sample(1:10, sum(adjacency_matrix!=0), replace=TRUE)
+partition <- leiden(snn_graph, weights = weights)
+table(partition)
+
+## ---- warning=FALSE, message=FALSE, eval=module--------------------------
+# generate (weighted) igraph object in R
+library("igraph")
+adjacency_matrix[adjacency_matrix >= 1] <- weights
+snn_graph <- graph_from_adjacency_matrix(adjacency_matrix, weighted = TRUE)
+partition <- leiden(snn_graph)
 table(partition)
 
 ## ---- eval=FALSE---------------------------------------------------------
-#  adjacency_matrix <- as.matrix(object@snn)
-#  membership <- leiden(adjacency_matrix)
-#  object@ident <- as.factor(membership)
-#  names(object@ident) <- rownames(object@meta.data)
-#  object@meta.data$ident <- as.factor(membership)
+#  library("Seurat")
+#  FindClusters(pbmc_small)
+#  membership <- leiden(pbmc_small@snn)
+#  table(membership)
+#  pbmc_small@ident <- as.factor(membership)
+#  names(pbmc_small@ident) <- rownames(pbmc_small@meta.data)
+#  pbmc_small@meta.data$ident <- as.factor(membership)
 
 ## ---- eval=FALSE---------------------------------------------------------
 #  library("Seurat")
