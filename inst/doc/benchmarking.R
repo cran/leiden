@@ -32,10 +32,10 @@ paste(Sys.info()[c(4, 2, 1)])
 ## ------------------------------------------------------------------------
 R.version$version.string
 
-## ---- include=FALSE------------------------------------------------------
-library("reticulate")
-py_install("python-igraph")
-py_install("leidenalg", forge = TRUE)
+## ---- eval=FALSE---------------------------------------------------------
+#  library("reticulate")
+#  py_install("python-igraph")
+#  py_install("leidenalg")
 
 ## ------------------------------------------------------------------------
 partition <- py$partition$membership + 1
