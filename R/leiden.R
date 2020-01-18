@@ -3,7 +3,7 @@
 ##' @description Implements the Leiden clustering algorithm in R using reticulate to run the Python version. Requires the python "leidenalg" and "igraph" modules to be installed. Returns a vector of partition indices.
 ##' @param object An adjacency matrix compatible with \code{\link[igraph]{igraph}} object or an input graph as an \code{\link[igraph]{igraph}} object (e.g., shared nearest neighbours).
 ##' @param partition_type Type of partition to use. Defaults to RBConfigurationVertexPartition. Options include: ModularityVertexPartition, RBERVertexPartition, CPMVertexPartition, MutableVertexPartition, SignificanceVertexPartition, SurpriseVertexPartition (see the Leiden python module documentation for more details)
-##' @param initial_membership,weights,node_sizes Parameters to pass to the Python leidenalg function (defaults initial_membership=None, weights=None).
+##' @param initial_membership,weights,node_sizes Parameters to pass to the Python leidenalg function (defaults initial_membership=None, weights=None). Weights are derived from weighted igraph objects and non-zero integer values of adjacency matrices.
 ##' @param resolution_parameter A parameter controlling the coarseness of the clusters
 ##' @param seed Seed for the random number generator. By default uses a random seed if nothing is specified.
 ##' @param n_iterations Number of iterations to run the Leiden algorithm. By default, 2 iterations are run. If the number of iterations is negative, the Leiden algorithm is run until an iteration in which there was no improvement.
@@ -70,10 +70,8 @@
 ##'
 ##' @keywords graph network igraph mvtnorm simulation
 ##' @importFrom reticulate import r_to_py
+##' @rdname leiden
 ##' @export
-##'
-#' @export
-#' @rdname leiden
 leiden <- function(object,
                    partition_type = c(
                        'RBConfigurationVertexPartition',
@@ -93,8 +91,8 @@ leiden <- function(object,
     UseMethod("leiden", object)
 }
 
-#' @export
-#' @importFrom methods is
+##' @export
+##' @importFrom methods is
 leiden.matrix <- function(object,
                           partition_type = c(
                               'RBConfigurationVertexPartition',
@@ -163,12 +161,13 @@ leiden.matrix <- function(object,
     partition
 }
 
-#' @export
+##' @export
 leiden.data.frame <- leiden.matrix
-#' @export
-#' @importFrom igraph graph_from_adjacency_matrix
-#' @importFrom methods as
-#' @importClassesFrom Matrix dgCMatrix dgeMatrix
+
+##' @importFrom igraph graph_from_adjacency_matrix edge.attributes set.edge.attribute E
+##' @importFrom methods as
+##' @importClassesFrom Matrix dgCMatrix dgeMatrix
+##' @export
 leiden.Matrix <- function(object,
                           partition_type = c(
                               'RBConfigurationVertexPartition',
@@ -189,7 +188,13 @@ leiden.Matrix <- function(object,
     #cast to sparse matrix
     adj_mat <- as(object, "dgCMatrix")
     #run as igraph object (passes to reticulate)
-    object <- graph_from_adjacency_matrix(adjmatrix = adj_mat)
+    if(is.null(weights)){
+        object <- graph_from_adjacency_matrix(adjmatrix = adj_mat, weighted = TRUE)
+        weights <- edge.attributes(object)$weight
+    } else {
+        object <- graph_from_adjacency_matrix(adjmatrix = adj_mat, weighted = TRUE)
+        object <- set.edge.attribute(object, "weight", index=E(object), weights)
+    }
 
     leiden.igraph(object,
         partition_type = partition_type,
@@ -201,11 +206,11 @@ leiden.Matrix <- function(object,
     )
 }
 
-#' @export
+##' @export
 leiden.default <- leiden.matrix
 
-#' @importFrom igraph V as_edgelist is.weighted is.named
-#' @export
+##' @importFrom igraph V as_edgelist is.weighted is.named edge.attributes
+##' @export
 leiden.igraph <- function(object,
                           partition_type = c(
                               'RBConfigurationVertexPartition',
@@ -248,7 +253,7 @@ leiden.igraph <- function(object,
     #compute weights if weighted graph given
     if (is.weighted(object)) {
         #assign weights to edges (without dependancy on igraph)
-        weights <- r_to_py(weights(object))
+        weights <- r_to_py(edge.attributes(object)$weight)
         snn_graph$es$set_attribute_values('weight', weights)
     }
 
@@ -267,7 +272,6 @@ leiden.igraph <- function(object,
     partition
 }
 
-leiden.default <- leiden.matrix
 
 # global reference to python modules (will be initialized in .onLoad)
 leidenalg <- NULL
@@ -276,8 +280,15 @@ ig <- NULL
 .onLoad = function(libname, pkgname) {
     if(reticulate::py_available()){
         install_python_modules <- function(method = "auto", conda = "auto") {
-            reticulate::py_install("python-igraph", method = method, conda = conda)
-            reticulate::py_install("leidenalg", method = method, conda = conda, forge = TRUE)
+            if(!is.null(reticulate::conda_binary())){
+                reticulate::conda_create("r-reticulate")
+                reticulate::use_condaenv("r-reticulate")
+                reticulate::conda_install("r-reticulate", "python-igraph")
+                reticulate::conda_install("r-reticulate", "leidenalg", forge = TRUE)
+            } else {
+                reticulate::py_install("python-igraph", method = method, conda = conda)
+                reticulate::py_install("leidenalg", method = method, conda = conda, forge = TRUE)
+            }
         }
     }
     if (suppressWarnings(suppressMessages(requireNamespace("reticulate")))) {
