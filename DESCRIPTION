@@ -1,8 +1,8 @@
 Package: leiden
 Type: Package
 Title: R Implementation of Leiden Clustering Algorithm
-Version: 0.3.2
-Date: 2020-01-17
+Version: 0.3.3
+Date: 2020-02-03
 Authors@R: c(person("S. Thomas", "Kelly", email = "tom.kelly@riken.jp", role = c("aut", "cre", "trl")),
            person("Vincent A.", "Traag", email = "v.a.traag@cwts.leidenuniv.nl", role = c("com")))
 Description: Implements the 'Python leidenalg' module to be called in R.
@@ -20,9 +20,9 @@ Suggests: data.table, tibble, devtools, covr, testthat, spelling,
 Language: en-US
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2020-01-17 17:06:59 UTC; tom
+Packaged: 2020-02-04 02:26:36 UTC; tom
 Author: S. Thomas Kelly [aut, cre, trl],
   Vincent A. Traag [com]
 Maintainer: S. Thomas Kelly <tom.kelly@riken.jp>
 Repository: CRAN
-Date/Publication: 2020-01-18 06:20:17 UTC
+Date/Publication: 2020-02-04 07:40:06 UTC
