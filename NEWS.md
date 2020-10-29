@@ -1,3 +1,15 @@
+# leiden 0.3.4
+
+* add support for bipartite graphs (requires leidenalg 0.6.1 or later)
+
+* changes to install python leidenalg from vtraag channel on Windows
+
+* bug fixes to install documentation
+
+* improve automated conda configuration in background on loading library
+
+* optionally derive edge weights from the Laplacian matrix
+
 # leiden 0.3.3
 
 * bug fixes for documentation in response to changes to R

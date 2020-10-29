@@ -8,19 +8,22 @@ leiden(
   object,
   partition_type = c("RBConfigurationVertexPartition", "ModularityVertexPartition",
     "RBERVertexPartition", "CPMVertexPartition", "MutableVertexPartition",
-    "SignificanceVertexPartition", "SurpriseVertexPartition"),
+    "SignificanceVertexPartition", "SurpriseVertexPartition",
+    "ModularityVertexPartition.Bipartite", "CPMVertexPartition.Bipartite"),
   initial_membership = NULL,
   weights = NULL,
   node_sizes = NULL,
   resolution_parameter = 1,
   seed = NULL,
-  n_iterations = 2L
+  n_iterations = 2L,
+  degree_as_node_size = FALSE,
+  laplacian = FALSE
 )
 }
 \arguments{
 \item{object}{An adjacency matrix compatible with \code{\link[igraph]{igraph}} object or an input graph as an \code{\link[igraph]{igraph}} object (e.g., shared nearest neighbours).}
 
-\item{partition_type}{Type of partition to use. Defaults to RBConfigurationVertexPartition. Options include: ModularityVertexPartition, RBERVertexPartition, CPMVertexPartition, MutableVertexPartition, SignificanceVertexPartition, SurpriseVertexPartition (see the Leiden python module documentation for more details)}
+\item{partition_type}{Type of partition to use. Defaults to RBConfigurationVertexPartition. Options include: ModularityVertexPartition, RBERVertexPartition, CPMVertexPartition, MutableVertexPartition, SignificanceVertexPartition, SurpriseVertexPartition, ModularityVertexPartition.Bipartite, CPMVertexPartition.Bipartite (see the Leiden python module documentation for more details)}
 
 \item{initial_membership, weights, node_sizes}{Parameters to pass to the Python leidenalg function (defaults initial_membership=None, weights=None). Weights are derived from weighted igraph objects and non-zero integer values of adjacency matrices.}
 
@@ -29,12 +32,17 @@ leiden(
 \item{seed}{Seed for the random number generator. By default uses a random seed if nothing is specified.}
 
 \item{n_iterations}{Number of iterations to run the Leiden algorithm. By default, 2 iterations are run. If the number of iterations is negative, the Leiden algorithm is run until an iteration in which there was no improvement.}
+
+\item{degree_as_node_size}{(defaults to FALSE). If True use degree as node size instead of 1, to mimic modularity for Bipartite graphs.}
+
+\item{laplacian}{(defaults to FALSE). Derive edge weights from the Laplacian matrix.}
 }
 \value{
 A partition of clusters as a vector of integers
 }
 \description{
 Implements the Leiden clustering algorithm in R using reticulate to run the Python version. Requires the python "leidenalg" and "igraph" modules to be installed. Returns a vector of partition indices.
+Windows users can still this with devtools::install_github("rstudio/reticulate", ref = "86ebb56"); reticulate::use_condaenv("r-reticulate"); reticulate::conda_install("r-reticulate", "leidenalg", channel = "vtraag")
 }
 \examples{
 #check if python is availble

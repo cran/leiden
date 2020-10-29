@@ -265,13 +265,17 @@ print(paste(c("leiden time:", reticulate_time, "seconds"), collapse = " "))
 
 The R version can be installed with devtools or from CRAN:
   
-```{R, eval = FALSE}
+```{r, eval=FALSE}
 install.packages("leiden")
+```
+
+```{r, eval=TRUE, include=FALSE}
+install.packages("leiden",  quiet = TRUE, repos = 1)
+devtools::install_github("TomKellyGenetics/leiden", ref = "dev")
 ```
 
 ```{bash, eval = FALSE}
 install.packages("leiden")
-devtools::install_github("TomKellyGenetics/leiden", ref = "dev")
 ```
 
 Note that these require the Python version as a dependency.
