@@ -14,9 +14,9 @@ module <- py_available() && reticulate::py_module_available("leidenalg") && reti
 ## ---- eval=FALSE------------------------------------------------------------------------------------------------------
 #  install.packages("leiden")
 
-## ---- eval=TRUE, include=FALSE----------------------------------------------------------------------------------------
-install.packages("leiden",  quiet = TRUE, repos = 1)
-devtools::install_github("TomKellyGenetics/leiden", ref = "dev")
+## ---- eval=FALSE, include=FALSE---------------------------------------------------------------------------------------
+#  install.packages("leiden",  quiet = TRUE, repos = 1)
+#  devtools::install_github("TomKellyGenetics/leiden", ref = "dev")
 
 ## ---------------------------------------------------------------------------------------------------------------------
 library("leiden")

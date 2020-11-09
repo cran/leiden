@@ -98,9 +98,9 @@ print(paste(c("leiden time:", reticulate_time, "seconds"), collapse = " "))
 ## ---- eval=FALSE--------------------------------------------------------------
 #  install.packages("leiden")
 
-## ---- eval=TRUE, include=FALSE------------------------------------------------
-install.packages("leiden",  quiet = TRUE, repos = 1)
-devtools::install_github("TomKellyGenetics/leiden", ref = "dev")
+## ---- eval=FALSE, include=FALSE-----------------------------------------------
+#  install.packages("leiden",  quiet = TRUE, repos = 1)
+#  devtools::install_github("TomKellyGenetics/leiden", ref = "dev")
 
 ## -----------------------------------------------------------------------------
 R.version.string
