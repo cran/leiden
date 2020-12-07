@@ -85,6 +85,11 @@ node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(graph_object, vertex.color = node.cols)
 
 ## ---- warning=FALSE, message=FALSE, eval=module-----------------------------------------------------------------------
+partition <- leiden(adjacency_matrix, max_comm_size = 12)
+node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
+plot(graph_object, vertex.color = node.cols)
+
+## ---- warning=FALSE, message=FALSE, eval=module-----------------------------------------------------------------------
 #generate example weights
 weights <- sample(1:10, sum(adjacency_matrix!=0), replace=TRUE)
 partition <- leiden(adjacency_matrix, weights = weights)

@@ -137,6 +137,21 @@ library("RColorBrewer")
 node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(bipartite_graph, vertex.color = node.cols, layout = layout.kamada.kawai)
 
+## ---- eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+partition <- leiden(bipartite_graph, partition_type = "ModularityVertexPartition.Bipartite", max_comm_size = 6, resolution_parameter = 0.025, seed = 42)
+
+## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+#  partition <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
+#                 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2)
+
+## ---------------------------------------------------------------------------------------------------------------------
+table(partition)
+
+## ---- eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+library("RColorBrewer")
+node.cols <- brewer.pal(max(c(11, partition)),"Pastel1")[partition]
+plot(bipartite_graph, vertex.color = node.cols, layout = layout.kamada.kawai)
+
 ## ---- eval=module-----------------------------------------------------------------------------------------------------
 partition <- leiden(bipartite_graph, partition_type = "CPMVertexPartition.Bipartite", resolution_parameter = 0.02, seed = 42,
                     degree_as_node_size = TRUE)

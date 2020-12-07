@@ -16,12 +16,13 @@ leiden(
   resolution_parameter = 1,
   seed = NULL,
   n_iterations = 2L,
+  max_comm_size = 0L,
   degree_as_node_size = FALSE,
   laplacian = FALSE
 )
 }
 \arguments{
-\item{object}{An adjacency matrix compatible with \code{\link[igraph]{igraph}} object or an input graph as an \code{\link[igraph]{igraph}} object (e.g., shared nearest neighbours).}
+\item{object}{An adjacency matrix compatible with \code{\link[igraph]{igraph}} object or an input graph as an \code{\link[igraph]{igraph}} object (e.g., shared nearest neighbours). A list of multiple graph objects can be passed for multiplex community detection.}
 
 \item{partition_type}{Type of partition to use. Defaults to RBConfigurationVertexPartition. Options include: ModularityVertexPartition, RBERVertexPartition, CPMVertexPartition, MutableVertexPartition, SignificanceVertexPartition, SurpriseVertexPartition, ModularityVertexPartition.Bipartite, CPMVertexPartition.Bipartite (see the Leiden python module documentation for more details)}
 
@@ -32,6 +33,8 @@ leiden(
 \item{seed}{Seed for the random number generator. By default uses a random seed if nothing is specified.}
 
 \item{n_iterations}{Number of iterations to run the Leiden algorithm. By default, 2 iterations are run. If the number of iterations is negative, the Leiden algorithm is run until an iteration in which there was no improvement.}
+
+\item{max_comm_size}{(non-negative int) – Maximal total size of nodes in a community. If zero (the default), then communities can be of any size.}
 
 \item{degree_as_node_size}{(defaults to FALSE). If True use degree as node size instead of 1, to mimic modularity for Bipartite graphs.}
 
@@ -82,22 +85,22 @@ table(partition)
 # generate (unweighted) igraph object in R
 library("igraph")
 adjacency_matrix[adjacency_matrix > 1] <- 1
-snn_graph <- graph_from_adjacency_matrix(adjacency_matrix)
-partition <- leiden(snn_graph)
+my_graph <- graph_from_adjacency_matrix(adjacency_matrix)
+partition <- leiden(my_graph)
 table(partition)
 
 # generate (weighted) igraph object in R
 library("igraph")
 adjacency_matrix[adjacency_matrix >= 1] <- weights
-snn_graph <- graph_from_adjacency_matrix(adjacency_matrix, weighted = TRUE)
-partition <- leiden(snn_graph)
+my_graph <- graph_from_adjacency_matrix(adjacency_matrix, weighted = TRUE)
+partition <- leiden(my_graph)
 table(partition)
 
 # pass weights to python leidenalg
 adjacency_matrix[adjacency_matrix >= 1 ] <- 1
-snn_graph <- graph_from_adjacency_matrix(adjacency_matrix, weighted = NULL)
+my_graph <- graph_from_adjacency_matrix(adjacency_matrix, weighted = NULL)
 weights <- sample(1:10, sum(adjacency_matrix!=0), replace=TRUE)
-partition <- leiden(snn_graph, weights = weights)
+partition <- leiden(my_graph, weights = weights)
 table(partition)
 
 # run only if python is available (for testing)
