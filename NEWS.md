@@ -1,8 +1,18 @@
+# leiden 0.3.10
+
+* removes limitation on number of cells (disables scientific notation within function call)
+
+* resolves conflict between base and r-reticulate conda environments on loading
+
+* resolves formatting error in Rmarkdown vignettes (https://github.com/yihui/knitr/issues/2057)
+
+* update testing for bipartite graphs for compatibility with newer version
+
 # leiden 0.3.9
 
 Updates maintainer contact details.
 
-# leiden 0.3.9
+# leiden 0.3.8
 
 * bug fixes for vignettes to retain on CRAN
 
