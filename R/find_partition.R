@@ -88,7 +88,8 @@ resolution_parameter = 1,
 seed = NULL,
 n_iterations = 2L,
 max_comm_size = 0L,
-degree_as_node_size = TRUE
+degree_as_node_size = TRUE,
+legacy = FALSE
 ) {
   # disable printing numerals in scientific notation
   oo <- options(scipen = 100000000000)
@@ -295,7 +296,7 @@ seed = NULL,
 n_iterations = 2L,
 max_comm_size = 0L,
 degree_as_node_size = TRUE,
-legacy = FALSE
+legacy = TRUE
 ) {
   # disable printing numerals in scientific notation
   oo <- options(scipen = 100000000000)

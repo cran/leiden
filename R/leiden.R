@@ -15,6 +15,7 @@ NULL
 ##' @param max_comm_size (non-negative int) – Maximal total size of nodes in a community. If zero (the default), then communities can be of any size.
 ##' @param degree_as_node_size (defaults to FALSE). If True use degree as node size instead of 1, to mimic modularity for Bipartite graphs.
 ##' @param laplacian (defaults to FALSE). Derive edge weights from the Laplacian matrix.
+##' @param legacy (defaults to FALSE). Force calling python implementation via reticulate. Default behaviour is calling cluster_leiden in igraph with Modularity (for undirected graphs) and CPM cost functions.
 ##' @return A partition of clusters as a vector of integers
 ##' @examples
 ##' #check if python is availble
@@ -99,7 +100,8 @@ leiden <- function(object,
                    n_iterations = 2L,
                    max_comm_size = 0L,
                    degree_as_node_size = FALSE,
-                   laplacian = FALSE) {
+                   laplacian = FALSE,
+                   legacy = FALSE) {
     UseMethod("leiden", object)
 }
 
@@ -125,7 +127,8 @@ leiden.matrix <- function(object,
                           n_iterations = 2L,
                           max_comm_size = 0L,
                           degree_as_node_size = FALSE,
-                          laplacian = FALSE
+                          laplacian = FALSE,
+                          legacy = FALSE
 ) {
     # disable printing numerals in scientific notation
     oo <- options(scipen = 100000000000)
@@ -201,8 +204,12 @@ leiden.Matrix <- function(object,
                           n_iterations = 2L,
                           max_comm_size = 0L,
                           degree_as_node_size = FALSE,
-                          laplacian = FALSE
+                          laplacian = FALSE,
+                          legacy = FALSE
 ) {
+    if(length(partition_type) > 1) partition_type <- partition_type[[1]][1]
+    partition_type <- match.arg(partition_type)
+
     # disable printing numerals in scientific notation
     oo <- options(scipen = 100000000000)
     # restore options when function terminates
@@ -227,7 +234,8 @@ leiden.Matrix <- function(object,
                   seed = seed,
                   n_iterations = n_iterations,
                   degree_as_node_size = degree_as_node_size,
-                  laplacian = laplacian
+                  laplacian = laplacian,
+                  legacy = legacy
     )
 }
 
@@ -255,7 +263,8 @@ leiden.list <- function(object,
                         n_iterations = 2L,
                         max_comm_size = 0L,
                         degree_as_node_size = FALSE,
-                        laplacian = FALSE
+                        laplacian = FALSE,
+                        legacy = FALSE
 ) {
     # disable printing numerals in scientific notation
     oo <- options(scipen = 100000000000)
@@ -276,7 +285,8 @@ leiden.list <- function(object,
                                    n_iterations = n_iterations,
                                    max_comm_size = max_comm_size,
                                    degree_as_node_size = degree_as_node_size,
-                                   laplacian = laplacian
+                                   laplacian = laplacian,
+                                   legacy = legacy
         )
     } else{
 
@@ -323,7 +333,7 @@ leiden.list <- function(object,
 ##' @export
 leiden.default <- leiden.matrix
 
-##' @importFrom igraph V as_edgelist is.weighted is.named edge_attr as_adjacency_matrix laplacian_matrix vertex_attr is_bipartite bipartite_mapping set_vertex_attr simplify is_named is_weighted
+##' @importFrom igraph V as_edgelist is_weighted is_named edge_attr as_adjacency_matrix laplacian_matrix vertex_attr is_bipartite bipartite_mapping set_vertex_attr simplify as.undirected is_directed communities membership cluster_leiden which_mutual which_loop is_named is_weighted
 ##' @export
 leiden.igraph <- function(object,
                           partition_type = c(
@@ -345,8 +355,13 @@ leiden.igraph <- function(object,
                           n_iterations = 2L,
                           max_comm_size = 0L,
                           degree_as_node_size = FALSE,
-                          laplacian = FALSE
+                          laplacian = FALSE,
+                          legacy = FALSE
 ) {
+    #default partition
+    if(length(partition_type) > 1) partition_type <- partition_type[[1]][1]
+    partition_type <- match.arg(partition_type)
+
     # disable printing numerals in scientific notation
     oo <- options(scipen = 100000000000)
     # restore options when function terminates
@@ -357,85 +372,122 @@ leiden.igraph <- function(object,
     leidenalg <- import("leidenalg", delay_load = TRUE)
     ig <- import("igraph", delay_load = TRUE)
 
-    #default partition
-    if(length(partition_type) > 1) partition_type <- partition_type[[1]][1]
-    partition_type <- match.arg(partition_type)
-
-    ##convert to python numpy.ndarray, then a list
-    if(!is.named(object)){
-        vertices <- as.list(as.character(V(object)))
-    } else {
-        vertices <- as.list(names(V(object)))
-    }
-
-    edges <- as_edgelist(object)
-    dim(edges)
-    edgelist <- list(rep(NA, nrow(edges)))
-    for(ii in 1:nrow(edges)){
-        edgelist[[ii]] <- as.character(edges[ii,])
+    #pass weights to igraph if not found
+    if(!is_weighted(object) && !is.null(weights)){
+        #assign weights to edges (without dependancy on igraph)
+        if(length(E(object)) == length(weights)){
+            set_edge_attr(object, "weight", value = weights)
+        } else {
+            warning(paste("weights but be same length as number of edges:", length(E(object))))
+            weights <- NULL
+        }
     }
 
     #derive Laplacian
     if(laplacian == TRUE){
         object <- simplify(object, remove.multiple = TRUE, remove.loops = TRUE)
         laplacian <- laplacian_matrix(object)
-        if(!is.weighted(object)){
-            edge_attr(object)$weight
+        if(!is_weighted(object)){
             object <- set_edge_attr(object, "weight", value = -as.matrix(laplacian)[as.matrix(laplacian) < 0])
         }
     }
 
-    py_graph <- make_py_graph(object, weights = weights)
-
-    if(length(partition_type) > 1) partition_type <- partition_type[1]
-    if(partition_type == "ModularityVertexPartition.Bipartite"){
-        if(is.null(vertex_attr(object, "type"))){
-            if(bipartite_mapping(object)$res){
-                packageStartupMessage("computing bipartite partitions")
-                object <- set_vertex_attr(object, "type", value = bipartite_mapping(object)$type)
-            } else {
-                packageStartupMessage("cannot compute bipartite types, defaulting to partition type ModularityVertexPartition")
-                partition_type <- "ModularityVertexPartition"
-            }
+    #check whether compatible with igraph implementations in R
+    if(is_directed(object) && !is_bipartite(object)){
+        #coerce to undirected graph object if possible
+        if(all(which_mutual(object) | which_loop(object)) || partition_type == "CPMVertexPartition"){
+            object <- as.undirected(object, mode = "each")
         }
     }
-    if(partition_type == "CPMVertexPartition.Bipartite"){
-        if(is.null(vertex_attr(object, "type"))){
-            if(bipartite_mapping(object)$res){
-                packageStartupMessage("computing bipartite partitions")
-                object <- set_vertex_attr(object, "type", value = bipartite_mapping(object)$type)
-            } else {
-                packageStartupMessage("cannot compute bipartite types, defaulting to partition type CPMVertexPartition")
-                partition_type <- "CPMVertexPartition"
+    call_igraph <- !is_directed(object) && !is_bipartite(object) && legacy == FALSE && (partition_type == "CPMVertexPartition" || partition_type == "ModularityVertexPartition")
+    #print(call_igraph)
+
+    if(call_igraph == TRUE){
+        #call igraph implementation
+        if(partition_type == "CPMVertexPartition"){
+            objective_function <- "cpm"
+        }
+        if(partition_type == "ModularityVertexPartition"){
+            objective_function <- "modularity"
+        }
+
+        #compute partitions with igraph in C
+        if(!is.null(seed)) set.seed(seed)
+        partition <- membership(cluster_leiden(graph = object,
+                                               objective_function = objective_function,
+                                               weights = weights,
+                                               resolution_parameter = resolution_parameter,
+                                               initial_membership = initial_membership,
+                                               n_iterations = n_iterations,
+                                               vertex_weights = NULL
+        ))
+        partition <- as.numeric(partition)
+    } else {
+        #call python reticulate implementation
+        #import python modules with reticulate
+        numpy <- import("numpy", delay_load = TRUE)
+        leidenalg <- import("leidenalg", delay_load = TRUE)
+        ig <- import("igraph", delay_load = TRUE)
+
+        py_graph <- make_py_object(object, weights = weights)
+
+        if(is_bipartite(object) && partition_type == "ModularityVertexPartition"){
+            partition_type <- "ModularityVertexPartition.Bipartite"
+        }
+        if(partition_type == "ModularityVertexPartition.Bipartite"){
+            if(is.null(vertex_attr(object, "type"))){
+                if(bipartite_mapping(object)$res){
+                    packageStartupMessage("computing bipartite partitions")
+                    object <- set_vertex_attr(object, "type", value = bipartite_mapping(object)$type)
+                    partition_type <- "ModularityVertexPartition.Bipartite"
+                } else {
+                    packageStartupMessage("cannot compute bipartite types, defaulting to partition type ModularityVertexPartition")
+                    partition_type <- "ModularityVertexPartition"
+                }
             }
         }
-    }
+        if(is_bipartite(object) && partition_type == "CPMVertexPartition"){
+            partition_type <- "CPMVertexPartition.Bipartite"
+        }
+        if(partition_type == "CPMVertexPartition.Bipartite"){
+            if(is.null(vertex_attr(object, "type"))){
+                if(bipartite_mapping(object)$res){
+                    packageStartupMessage("computing bipartite partitions")
+                    object <- set_vertex_attr(object, "type", value = bipartite_mapping(object)$type)
+                    partition_type <- "CPMVertexPartition.Bipartite"
+                } else {
+                    packageStartupMessage("cannot compute bipartite types, defaulting to partition type CPMVertexPartition")
+                    partition_type <- "CPMVertexPartition"
+                }
+            }
+        }
 
-    if(!is.null(vertex_attr(object, "type")) || is_bipartite(object)){
-        type <- as.integer(unlist(V(object)$type))
-        py_graph$vs$set_attribute_values('type', r_to_py(as.integer(type)))
-    }
+        if(!is.null(vertex_attr(object, "type")) || is_bipartite(object)){
+            type <- as.integer(unlist(V(object)$type))
+            py_graph$vs$set_attribute_values('type', r_to_py(as.integer(type)))
+        }
 
-    #compute partitions
-    partition <- find_partition(py_graph, partition_type = partition_type,
-                                initial_membership = initial_membership ,
-                                weights = weights,
-                                node_sizes = node_sizes,
-                                resolution_parameter = resolution_parameter,
-                                seed = seed,
-                                n_iterations = n_iterations,
-                                max_comm_size = max_comm_size,
-                                degree_as_node_size = degree_as_node_size
-    )
+        #compute partitions with reticulate
+        partition <- find_partition(py_graph, partition_type = partition_type,
+                                    initial_membership = initial_membership,
+                                    weights = weights,
+                                    node_sizes = node_sizes,
+                                    resolution_parameter = resolution_parameter,
+                                    seed = seed,
+                                    n_iterations = n_iterations,
+                                    max_comm_size = max_comm_size,
+                                    degree_as_node_size = degree_as_node_size
+        )
+    }
     partition
 }
 
 
 # global reference to python modules (will be initialized in .onLoad)
-leidenalg <<- NULL
-ig <<- NULL
-numpy <<- NULL
-pd <<- NULL
+leidenalg <- NULL
+ig <- NULL
+numpy <- NULL
+pd <- NULL
 
 #' @importFrom utils install.packages capture.output
 
@@ -516,43 +568,31 @@ pd <<- NULL
                             Sys.setenv(RETICULATE_PYTHON = reticulate::conda_python())
                         }
                     } else {
-                        # shell <- strsplit(Sys.getenv("SHELL"), "/")[[1]]
-                        # shell <- shell[length(shell)]
-                        # eval(parse(text = paste0(c('system("conda init ', shell, '")'), collapse = "")))
-                        # eval(parse(text = paste0(c('system("source ~/.', shell, 'rc")'), collapse = "")))
-                        # shell <- as.list(system("echo $0"))
-                        # if(shell == sh) shell <- "bash"
-                        # system("conda init")
-                        # eval(parse(text = paste0(c('system("source ~/.', shell, '_profile")'), collapse = "")))
-                        # system("conda init")
-                        # system("conda activate r-reticulate")
                         if(!reticulate::py_module_available("numpy")) suppressWarnings(suppressMessages(reticulate::py_install("numpy")))
                         if(!reticulate::py_module_available("pandas")) suppressWarnings(suppressMessages(reticulate::py_install("pandas")))
                         if(!reticulate::py_module_available("igraph")) suppressWarnings(suppressMessages(reticulate::py_install("python-igraph", method = method, conda = conda)))
                         if(!reticulate::py_module_available("umap")) suppressWarnings(suppressMessages(reticulate::py_install("umap-learn")))
                         if(!reticulate::py_module_available("leidenalg")) suppressWarnings(suppressMessages(reticulate::py_install("leidenalg", method = method, conda = conda, forge = TRUE)))
-                        #Sys.setenv(PATH = paste0(strsplit(reticulate::py_config()$pythonhome, ":")[[1]][1], "/bin:$PATH"))
                         Sys.setenv(RETICULATE_PYTHON = reticulate::py_config()$python)
                     }
                 }
-                quiet <- function(expr, all = TRUE) {
-                    if (Sys.info()['sysname'] == "Windows") {
-                        file <- "NUL"
-                    } else {
-                        file <- "/dev/null"
-                    }
-
-                    if (all) {
-                        suppressWarnings(suppressMessages(suppressPackageStartupMessages(
-                            capture.output(expr, file = file)
-                        )))
-                    } else {
-                        capture.output(expr, file = file)
-                    }
-
-                }
-                quiet(install_python_modules())
             }
+            quiet <- function(expr, all = TRUE) {
+                if (Sys.info()['sysname'] == "Windows") {
+                    file <- "NUL"
+                } else {
+                    file <- "/dev/null"
+                }
+
+                if (all) {
+                    suppressWarnings(suppressMessages(suppressPackageStartupMessages(
+                        capture.output(expr, file = file)
+                    )))
+                } else {
+                    capture.output(expr, file = file)
+                }
+            }
+            quiet(install_python_modules())
         }
     }, error = function(e){
         packageStartupMessage("Unable to install python modules igraph and leidenalg")

@@ -1,8 +1,30 @@
+# leiden 0.4.2
+
+* migrates bug fixes to conda environment and limit on total cells to refactored package
+
+* allows calling igraph::community_leiden for supported parameters (requires igraph v1.2.7 or later)
+
+* automatically calls native R version of leiden rather than Python to improve performance
+
+* updates vignettes and unit tests to ensure consistent results with past versions
+
+# leiden 0.4.1
+
+* migrates changes to retain on CRAN to leiden 0.4.0 (alpha)
+
+# leiden 0.4.0
+
+* migrate to calling community_leiden in igraph
+
+* updates the benchmarking vignette to compare performance to legacy versions using reticulate
+
 # leiden 0.3.10
 
-* removes limitation on number of cells (disables scientific notation within function call)
+* removes limitation on number of cells (disables scientific notation within function call): resolves #12
 
-* resolves conflict between base and r-reticulate conda environments on loading
+* resolves conflict between base and r-reticulate conda environments on loading: resolves #20
+
+* updates conda environment in interactive sessions only for compliance to CRAN checks
 
 * resolves formatting error in Rmarkdown vignettes (https://github.com/yihui/knitr/issues/2057)
 

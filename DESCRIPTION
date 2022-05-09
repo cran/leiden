@@ -1,8 +1,8 @@
 Package: leiden
 Type: Package
 Title: R Implementation of Leiden Clustering Algorithm
-Version: 0.3.10
-Date: 2022-04-25
+Version: 0.4.2
+Date: 2022-05-09
 Authors@R: c(person("S. Thomas", "Kelly", email = "tomkellygenetics@gmail.com", role = c("aut", "cre", "trl")),
            person("Vincent A.", "Traag", email = "v.a.traag@cwts.leidenuniv.nl", role = c("com")))
 Description: Implements the 'Python leidenalg' module to be called in R.
@@ -12,19 +12,19 @@ Description: Implements the 'Python leidenalg' module to be called in R.
 License: GPL-3 | file LICENSE
 URL: https://github.com/TomKellyGenetics/leiden
 BugReports: https://github.com/TomKellyGenetics/leiden/issues
-Imports: methods, reticulate, Matrix, igraph
+Imports: methods, reticulate, Matrix, igraph (>= 1.2.7)
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: bipartite, covr, data.table, devtools, graphsim, knitr,
-        multiplex, multinet, markdown, network, RColorBrewer,
-        rmarkdown, spelling, testthat, tibble
+        markdown, multiplex, multinet, network, qpdf, RColorBrewer,
+        remotes, rmarkdown, spelling, testthat, tibble
 Language: en-US
 VignetteBuilder: knitr
 Collate: 'find_partition.R' 'leiden.R' 'py_objects.R'
 NeedsCompilation: no
-Packaged: 2022-04-27 21:23:22 UTC; tom
+Packaged: 2022-05-09 12:34:44 UTC; kelly-t
 Author: S. Thomas Kelly [aut, cre, trl],
   Vincent A. Traag [com]
 Maintainer: S. Thomas Kelly <tomkellygenetics@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-04-27 22:00:02 UTC
+Date/Publication: 2022-05-09 13:20:02 UTC

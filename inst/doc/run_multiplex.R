@@ -256,13 +256,13 @@ table(partition)
 ## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
-plot_directed(multiplex_graph$lunch, main = "lunch", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$work, main = "work", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$facebook, main = "facebook", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[3], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$leisure, main = "leisure", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$coauthor, main = "coauthor", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$facebook, main = "facebook", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[3], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$leisure, main = "leisure", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$coauthor, main = "coauthor", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
 
 ## ---- eval=module-----------------------------------------------------------------------------------------------------
 partition <- leiden(multiplex_matrix,
@@ -292,13 +292,13 @@ table(partition)
 ## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
-plot_directed(multiplex_graph$lunch, main = "lunch", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$work, main = "work", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$facebook, main = "facebook", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[3], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$leisure, main = "leisure", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$coauthor, main = "coauthor", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$facebook, main = "facebook", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[3], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$leisure, main = "leisure", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$coauthor, main = "coauthor", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
 
 ## ---- eval=module-----------------------------------------------------------------------------------------------------
 partition <- leiden(multiplex_graph, partition_type = "CPMVertexPartition", max_comm_size = 8, resolution_parameter = 0.1, seed = 42)
@@ -315,13 +315,13 @@ table(partition)
 ## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
-plot_directed(multiplex_graph$lunch, main = "lunch", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$work, main = "work", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$facebook, main = "facebook", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[3], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$leisure, main = "leisure", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$coauthor, main = "coauthor", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$facebook, main = "facebook", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[3], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$leisure, main = "leisure", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$coauthor, main = "coauthor", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
 
 ## ---- eval=module-----------------------------------------------------------------------------------------------------
 partition <- leiden(multiplex_graph, partition_type = "ModularityVertexPartition", resolution_parameter = 0.02, seed = 42)
@@ -339,9 +339,9 @@ library("graphsim")
 library("RColorBrewer")
 node.cols <- brewer.pal(max(c(8, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
-plot_directed(multiplex_graph$lunch, main = "lunch", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$work, main = "work", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$facebook, main = "facebook", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[3], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$leisure, main = "leisure", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
-plot_directed(multiplex_graph$coauthor, main = "coauthor", fill.node  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$facebook, main = "facebook", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[3], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$leisure, main = "leisure", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
+plot_directed(multiplex_graph$coauthor, main = "coauthor", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
 

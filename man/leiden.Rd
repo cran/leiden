@@ -18,7 +18,8 @@ leiden(
   n_iterations = 2L,
   max_comm_size = 0L,
   degree_as_node_size = FALSE,
-  laplacian = FALSE
+  laplacian = FALSE,
+  legacy = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ leiden(
 \item{degree_as_node_size}{(defaults to FALSE). If True use degree as node size instead of 1, to mimic modularity for Bipartite graphs.}
 
 \item{laplacian}{(defaults to FALSE). Derive edge weights from the Laplacian matrix.}
+
+\item{legacy}{(defaults to FALSE). Force calling python implementation via reticulate. Default behaviour is calling cluster_leiden in igraph with Modularity (for undirected graphs) and CPM cost functions.}
 }
 \value{
 A partition of clusters as a vector of integers

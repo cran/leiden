@@ -114,7 +114,7 @@ G <- graph.famous("Zachary")
 summary(G)
 
 ## ---- eval=module-------------------------------------------------------------
-partition <- leiden(G, "ModularityVertexPartition")
+partition <- leiden(G, "ModularityVertexPartition", legacy = TRUE)
 partition
 
 ## ---- eval=module-------------------------------------------------------------
@@ -128,7 +128,7 @@ node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(G, vertex.color = node.cols, layout=layout_with_kk)
 
 ## ---- eval=module-------------------------------------------------------------
-partition <- leiden(G, "CPMVertexPartition", resolution_parameter = 0.5)
+partition <- leiden(G, "CPMVertexPartition", resolution_parameter = 0.05, legacy = TRUE)
 partition
 
 ## ---- eval=module-------------------------------------------------------------
@@ -149,12 +149,42 @@ table(partition)
 node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(G, vertex.color = node.cols, layout=layout_with_kk)
 
+## ---- eval=module-------------------------------------------------------------
+G <- as.undirected(G, mode = "each")
+is.directed(G)
+partition <- leiden(G, "ModularityVertexPartition", legacy = FALSE)
+partition
+
+## ---- eval=module-------------------------------------------------------------
+table(partition)
+
+## -----------------------------------------------------------------------------
+library("igraph")
+library("reticulate")
+library("RColorBrewer")
+node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
+plot(G, vertex.color = node.cols, layout=layout_with_kk)
+
+## ---- eval=module-------------------------------------------------------------
+partition <- membership(cluster_leiden(G, objective_function = "modularity"))
+partition
+table(partition)
+
+## ---- eval=module-------------------------------------------------------------
+partition <- leiden(G, "CPMVertexPartition", resolution_parameter = 0.1, legacy = FALSE)
+partition
+table(partition)
+
+## ---- eval=module-------------------------------------------------------------
+node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
+plot(G, vertex.color = node.cols, layout=layout_with_kk)
+
 ## ---- cache=TRUE, , eval=module-----------------------------------------------
 G <- graph.famous('Zachary')
 summary(G)
 start <- Sys.time()
 for(ii in 1:100){
-  partition = leiden(G, "ModularityVertexPartition")
+  partition <- leiden(G, "ModularityVertexPartition", legacy = TRUE)
 }
 end <- Sys.time()
 table(partition)
@@ -458,41 +488,119 @@ timing = difftime(time8, time1)[[1]]
 print(paste(c("total:", timing, "seconds"), collapse = " "))
 partition
 
+## -----------------------------------------------------------------------------
+time9 <- Sys.time()
+partition <- membership(cluster_leiden(G, objective_function = "modularity"))
+partition
+table(partition)
+time10 <- Sys.time()
+timing = difftime(time10, time9)[[1]]
+print(paste(c("run with igraph:", timing, "seconds"), collapse = " "))
+
+## ---- eval=module-------------------------------------------------------------
+time11 <- Sys.time()
+partition <- leiden(G, "ModularityVertexPartition", legacy = FALSE)
+partition
+table(partition)
+time12 <- Sys.time()
+timing = difftime(time12, time11)[[1]]
+print(paste(c("run with leiden in igraph:", timing, "seconds"), collapse = " "))
+
+## ---- eval=module-------------------------------------------------------------
+time13 <- Sys.time()
+partition <- leiden(G, "ModularityVertexPartition", legacy = TRUE)
+partition
+table(partition)
+time14 <- Sys.time()
+timing = difftime(time14, time13)[[1]]
+print(paste(c("run with leiden with reticulate:", timing, "seconds"), collapse = " "))
+
+## ---- eval=module-------------------------------------------------------------
+library("Matrix")
+adj_mat <- as(as_adjacency_matrix(G), Class = "dgCMatrix")
+time15 <- Sys.time()
+partition <- leiden(adj_mat, "ModularityVertexPartition", legacy = TRUE)
+partition
+table(partition)
+time16 <- Sys.time()
+timing = difftime(time16, time15)[[1]]
+print(paste(c("run with leiden with reticulate:", timing, "seconds"), collapse = " "))
+
+## ---- eval=module-------------------------------------------------------------
+adj_mat <- as_adjacency_matrix(G)
+time15 <- Sys.time()
+partition <- leiden(adj_mat, "ModularityVertexPartition", legacy = TRUE)
+partition
+table(partition)
+time16 <- Sys.time()
+timing = difftime(time16, time15)[[1]]
+print(paste(c("run with leiden with reticulate:", timing, "seconds"), collapse = " "))
+
+## ---- cache=TRUE, , eval=module-----------------------------------------------
+G <- graph.famous('Zachary')
+summary(G)
+start <- Sys.time()
+for(ii in 1:100){
+  partition <- membership(cluster_leiden(G, objective_function = "modularity"))
+}
+end <- Sys.time()
+table(partition)
+igraph_time = difftime(end, start)[[1]]
+print(paste(c("leiden time:", igraph_time, "seconds"), collapse = " "))
+
+## ---- cache=TRUE, , eval=module-----------------------------------------------
+G <- graph.famous('Zachary')
+summary(G)
+start <- Sys.time()
+for(ii in 1:100){
+  partition <- leiden(G, "ModularityVertexPartition", legacy =  FALSE)
+}
+end <- Sys.time()
+table(partition)
+R_cigraph_time = difftime(end, start)[[1]]
+print(paste(c("leiden time:", R_cigraph_time, "seconds"), collapse = " "))
+
 ## ---- fig.align = 'center', fig.height = 3, fig.width = 6, fig.keep = 'last', eval=module----
-barplot(c(bash_py_time, py$py_time, reticulate_time, R_graph_time, 
-          R_mat_time, R_sparse_mat_time), 
-        names = c("Python (shell)", "Python (Rmd)", "Reticulate", "R igraph",
+barplot(c(bash_py_time, py$py_time, reticulate_time, R_graph_time,
+          R_cigraph_time, igraph_time, R_mat_time, R_sparse_mat_time), 
+        names = c("Python (shell)", "Python (Rmd)", "Reticulate",
+                  "R igraph reticulate", "R igraph (C)", "R igraph cluster_leiden",
                   "R matrix","R dgCMatrix"), 
         col = brewer.pal(9,"Pastel1"), las = 2, srt = 45,
         ylab = "time (seconds)", main = "benchmarking 100 computations")
 abline(h=0)
 
 ## ---- fig.align = 'center', fig.height = 3, fig.width = 6, fig.keep = 'last', eval=module----
-barplot(c(bash_py_time, py$py_time, reticulate_time, R_graph_time, R_mat_time+R_mat_cast_time, 
+barplot(c(bash_py_time, py$py_time, reticulate_time, R_graph_time,
+          R_cigraph_time, igraph_time, R_mat_time+R_mat_cast_time, 
           R_sparse_mat_time+R_sparse_mat_cast_time), 
-        names = c("Python (shell)", "Python (Rmd)", "Reticulate", "R igraph",
+        names = c("Python (shell)", "Python (Rmd)", "Reticulate",
+                  "R igraph reticulate", "R igraph (C)", "R igraph cluster_leiden",
                   "R matrix","R dgCMatrix"), 
         col = "grey80", las = 2, srt = 45,
         ylab = "time (seconds)", main = "benchmarking 100 computations")
 barplot(c(bash_py_time, py$py_time, reticulate_time, R_graph_time,
-          R_mat_time,  R_sparse_mat_time), 
-        names = c("Python (shell)", "Python (Rmd)", "Reticulate", "R igraph",
-                  "R matrix","R dgCMatrix"), 
+          R_cigraph_time, igraph_time, R_mat_time,  R_sparse_mat_time), 
+        names = c("Python (shell)", "Python (Rmd)", "Reticulate",
+                  "R igraph reticulate", "R igraph (C)", "R igraph cluster_leiden",
+                  "R matrix","R dgCMatrix"),
         col = brewer.pal(9,"Pastel1"), las = 2, srt = 45,
         ylab = "time (seconds)", main = "benchmarking 100 computations", add = TRUE)
 abline(h=0)
 
 ## ---- fig.align = 'center', fig.height = 3, fig.width = 6, fig.keep = 'last', eval=module----
 R_graph_create_time = difftime(time4, time3)[[1]]
-barplot(c(bash_py_time, py$py_time+reticulate_create_time*100, reticulate_time+reticulate_create_time*100, R_graph_time+R_graph_create_time*100, R_mat_time, 
-          R_sparse_mat_time), 
-        names = c("Python (shell)", "Python (Rmd)", "Reticulate", "R igraph",
+barplot(c(bash_py_time, py$py_time+reticulate_create_time*100, reticulate_time+reticulate_create_time*100, R_graph_time+R_graph_create_time*100,
+        R_cigraph_time, igraph_time, R_mat_time, R_sparse_mat_time), 
+        names = c("Python (shell)", "Python (Rmd)", "Reticulate",
+                  "R igraph reticulate", "R igraph (C)", "R igraph cluster_leiden",
                   "R matrix","R dgCMatrix"), 
         col = "grey80", las = 2, srt = 45,
         ylab = "time (seconds)", main = "benchmarking 100 computations")
-barplot(c(bash_py_time, py$py_time, reticulate_time, R_graph_time,
-          R_mat_time,  R_sparse_mat_time), 
-        names = c("Python (shell)", "Python (Rmd)", "Reticulate", "R igraph",
+barplot(c(bash_py_time, py$py_time, reticulate_time, R_graph_time, 
+        R_cigraph_time, igraph_time, R_mat_time,  R_sparse_mat_time), 
+        names = c("Python (shell)", "Python (Rmd)", "Reticulate",
+                  "R igraph reticulate", "R igraph (C)", "R igraph cluster_leiden",
                   "R matrix","R dgCMatrix"), 
         col = brewer.pal(9,"Pastel1"), las = 2, srt = 45,
         ylab = "time (seconds)", main = "benchmarking 100 computations", add = TRUE)
