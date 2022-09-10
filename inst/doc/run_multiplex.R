@@ -256,7 +256,7 @@ table(partition)
 ## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
 plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
@@ -292,7 +292,7 @@ table(partition)
 ## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
 plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
@@ -315,7 +315,7 @@ table(partition)
 ## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
 plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)

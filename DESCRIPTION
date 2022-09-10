@@ -1,8 +1,8 @@
 Package: leiden
 Type: Package
 Title: R Implementation of Leiden Clustering Algorithm
-Version: 0.4.2
-Date: 2022-05-09
+Version: 0.4.3
+Date: 2022-09-10
 Authors@R: c(person("S. Thomas", "Kelly", email = "tomkellygenetics@gmail.com", role = c("aut", "cre", "trl")),
            person("Vincent A.", "Traag", email = "v.a.traag@cwts.leidenuniv.nl", role = c("com")))
 Description: Implements the 'Python leidenalg' module to be called in R.
@@ -16,15 +16,15 @@ Imports: methods, reticulate, Matrix, igraph (>= 1.2.7)
 Encoding: UTF-8
 RoxygenNote: 7.1.2
 Suggests: bipartite, covr, data.table, devtools, graphsim, knitr,
-        markdown, multiplex, multinet, network, qpdf, RColorBrewer,
-        remotes, rmarkdown, spelling, testthat, tibble
+        markdown, multiplex, multinet, network, RColorBrewer, remotes,
+        rmarkdown, spelling, testthat, tibble
 Language: en-US
 VignetteBuilder: knitr
 Collate: 'find_partition.R' 'leiden.R' 'py_objects.R'
 NeedsCompilation: no
-Packaged: 2022-05-09 12:34:44 UTC; kelly-t
+Packaged: 2022-09-10 14:11:24 UTC; tom
 Author: S. Thomas Kelly [aut, cre, trl],
   Vincent A. Traag [com]
 Maintainer: S. Thomas Kelly <tomkellygenetics@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-05-09 13:20:02 UTC
+Date/Publication: 2022-09-10 17:22:53 UTC

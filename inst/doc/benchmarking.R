@@ -517,7 +517,7 @@ print(paste(c("run with leiden with reticulate:", timing, "seconds"), collapse =
 
 ## ---- eval=module-------------------------------------------------------------
 library("Matrix")
-adj_mat <- as(as_adjacency_matrix(G), Class = "dgCMatrix")
+adj_mat <- as(as(as(as_adjacency_matrix(G), Class = "CsparseMatrix"), "generalMatrix"), "dMatrix")
 time15 <- Sys.time()
 partition <- leiden(adj_mat, "ModularityVertexPartition", legacy = TRUE)
 partition
