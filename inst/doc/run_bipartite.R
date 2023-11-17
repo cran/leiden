@@ -9,15 +9,15 @@ options(width = 120, cli.unicode = FALSE, cli.width = 120)
 library("reticulate")
 module <- py_available() && reticulate::py_module_available("leidenalg") && reticulate::py_module_available("igraph")
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 library("leiden")
 
-## ---- eval=FALSE------------------------------------------------------------------------------------------------------
+## ----eval=FALSE-------------------------------------------------------------------------------------------------------
 #  remotes::install_github("schochastics/networkdata")
 #  bipartite_graph <- networkdata::southern_women
 #  bipartite_graph
 
-## ---- echo=FALSE------------------------------------------------------------------------------------------------------
+## ----echo=FALSE-------------------------------------------------------------------------------------------------------
 library("igraph")
 suppressWarnings(suppressMessages({
   #imported from networkdata::southernwomen
@@ -71,7 +71,7 @@ bipartite_graph
 ## ---------------------------------------------------------------------------------------------------------------------
 table(as.numeric(V(bipartite_graph)$type))
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 node.cols <- c("palevioletred", "lightblue")[as.integer(V(bipartite_graph)$type)+1]
 plot(bipartite_graph, vertex.color = node.cols, layout = layout.kamada.kawai)
@@ -81,88 +81,88 @@ library("igraph")
 bipartite_matrix <- igraph::as_adjacency_matrix(bipartite_graph)
 bipartite_matrix 
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(bipartite_matrix, partition_type = "CPMVertexPartition.Bipartite", resolution_parameter = 0.2, seed = 42)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
 #                 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2)
 
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(bipartite_graph, partition_type = "CPMVertexPartition.Bipartite", resolution_parameter = 0.2, seed = 42)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
 #                 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2)
 
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("RColorBrewer")
 node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(bipartite_graph, vertex.color = node.cols, layout = layout.kamada.kawai)
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(bipartite_graph, partition_type = "ModularityVertexPartition.Bipartite", resolution_parameter = 0.02, seed = 42)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(1, 1, 1, 1, 1, 6, 6, 3, 6, 7, 4, 2, 2, 2, 2, 4, 5, 5, 1, 1,
 #                 1, 1, 6, 3, 7, 3, 5, 4, 5, 4, 2, 2)
 
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("RColorBrewer")
 node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(bipartite_graph, vertex.color = node.cols, layout = layout.kamada.kawai)
 
-## ---- eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 partition <- leiden(bipartite_graph, partition_type = "ModularityVertexPartition.Bipartite", resolution_parameter = 0.005, seed = 42)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
 #                 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2)
 
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("RColorBrewer")
 node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(bipartite_graph, vertex.color = node.cols, layout = layout.kamada.kawai)
 
-## ---- eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 partition <- leiden(bipartite_graph, partition_type = "ModularityVertexPartition.Bipartite", max_comm_size = 6, resolution_parameter = 0.025, seed = 42)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
 #                 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2)
 
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("RColorBrewer")
 node.cols <- brewer.pal(max(c(11, partition)),"Pastel1")[partition]
 plot(bipartite_graph, vertex.color = node.cols, layout = layout.kamada.kawai)
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(bipartite_graph, partition_type = "CPMVertexPartition.Bipartite", resolution_parameter = 0.02, seed = 42,
                     degree_as_node_size = TRUE)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(1, 1, 1, 1, 1, 6, 6, 3, 6, 7, 4, 2, 2, 2, 2, 4, 5, 5, 1, 1,
 #                 1, 1, 6, 3, 7, 3, 5, 4, 5, 4, 2, 2)
 
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----eval=module, warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("RColorBrewer")
 node.cols <- brewer.pal(max(c(3, partition)),"Pastel1")[partition]
 plot(bipartite_graph, vertex.color = node.cols, layout = layout.kamada.kawai)

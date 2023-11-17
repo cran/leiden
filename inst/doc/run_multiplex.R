@@ -9,15 +9,15 @@ options(width = 120, cli.unicode = FALSE, cli.width = 120)
 library("reticulate")
 module <- py_available() && reticulate::py_module_available("leidenalg") && reticulate::py_module_available("igraph")
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 library("leiden")
 
-## ---- eval=FALSE------------------------------------------------------------------------------------------------------
+## ----eval=FALSE-------------------------------------------------------------------------------------------------------
 #  remotes::install_github("Achab94/mplex")
 #  multiplex_graph <- mplex::aarhus_mplex
 #  multiplex_graph
 
-## ---- echo=FALSE------------------------------------------------------------------------------------------------------
+## ----echo=FALSE-------------------------------------------------------------------------------------------------------
 library("igraph")
 suppressWarnings(suppressMessages({
   #imported from Achab94/mplex::aarhus_mplex
@@ -224,7 +224,7 @@ multiplex_graph
 ## ---------------------------------------------------------------------------------------------------------------------
 names(multiplex_graph)
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
 par(mfrow = c(2, 3))
@@ -239,13 +239,13 @@ library("igraph")
 multiplex_matrix <- lapply(multiplex_graph, igraph::as_adjacency_matrix)
 multiplex_matrix 
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(multiplex_graph,
                        partition_type = "CPMVertexPartition",
                        resolution_parameter = 0.025,
                        seed = 9001)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(4, 2, 1, 3, 2, 3, 1, 2, 1, 3, 3, 2, 2, 3, 3, 3, 1, 1, 1, 2,
 #                 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2,
 #                2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1)
@@ -253,10 +253,10 @@ partition <- leiden(multiplex_graph,
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
 plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
@@ -264,13 +264,13 @@ plot_directed(multiplex_graph$facebook, main = "facebook", col.label  = node.col
 plot_directed(multiplex_graph$leisure, main = "leisure", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$coauthor, main = "coauthor", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(multiplex_matrix,
                        partition_type = "CPMVertexPartition",
                        resolution_parameter = 0.025,
                        seed = 9001)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(4, 2, 1, 3, 2, 3, 1, 2, 1, 3, 3, 2, 2, 3, 3, 3, 1, 1, 1, 2,
 #                 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2,
 #                2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1)
@@ -278,10 +278,10 @@ partition <- leiden(multiplex_matrix,
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(multiplex_graph, partition_type = "CPMVertexPartition", resolution_parameter = 0.1, seed = 42)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(8, 2, 6, 4, 2, 4, 6, 2, 7, 4, 4, 2, 2, 4, 4, 4, 3, 6, 1, 2,
 #                 6, 10, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 5, 5, 2,
 #                2, 2, 7, 6, 2, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 3, 6, 7, 5, 9, 5)
@@ -289,10 +289,10 @@ partition <- leiden(multiplex_graph, partition_type = "CPMVertexPartition", reso
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
 plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
@@ -300,10 +300,10 @@ plot_directed(multiplex_graph$facebook, main = "facebook", col.label  = node.col
 plot_directed(multiplex_graph$leisure, main = "leisure", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$coauthor, main = "coauthor", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(multiplex_graph, partition_type = "CPMVertexPartition", max_comm_size = 8, resolution_parameter = 0.1, seed = 42)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(11, 11, 5, 4, 8, 4, 5, 3, 6, 4, 4, 8, 8, 4, 4, 4, 1, 5, 7,
 #                 3, 5, 8, 1, 2, 6, 7, 7, 2, 2, 7, 2, 2, 2, 2, 2, 7, 3, 10, 9,
 #                 3, 3, 3, 6, 5, 3, 1, 1, 13, 1, 1, 1, 1, 9, 10, 9, 6, 5, 6, 10,
@@ -312,10 +312,10 @@ partition <- leiden(multiplex_graph, partition_type = "CPMVertexPartition", max_
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
-node.cols <- brewer.pal(max(c(10, partition)),"Pastel1")[partition]
+node.cols <- brewer.pal(min(c(9, partition)),"Pastel1")[partition]
 par(mfrow = c(2, 3))
 plot_directed(multiplex_graph$lunch, main = "lunch", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[1], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$work, main = "work", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[2], layout = layout.kamada.kawai)
@@ -323,10 +323,10 @@ plot_directed(multiplex_graph$facebook, main = "facebook", col.label  = node.col
 plot_directed(multiplex_graph$leisure, main = "leisure", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[4], layout = layout.kamada.kawai)
 plot_directed(multiplex_graph$coauthor, main = "coauthor", col.label  = node.cols, col.arrow = brewer.pal(5, "Pastel1")[5], layout = layout.kamada.kawai)
 
-## ---- eval=module-----------------------------------------------------------------------------------------------------
+## ----eval=module------------------------------------------------------------------------------------------------------
 partition <- leiden(multiplex_graph, partition_type = "ModularityVertexPartition", resolution_parameter = 0.02, seed = 42)
 
-## ---- eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"-------------------------------------------
+## ----eval=!module,echo=FALSE, message=FALSE, warning=FALSE, results="hide"--------------------------------------------
 #  partition <- c(4, 3, 4, 4, 3, 4, 4, 3, 1, 4, 4, 3, 3, 4, 4, 4, 1, 1, 2, 3,
 #                3, 3, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 5, 5, 3, 3,
 #                3, 1, 5, 3, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 1, 4, 1, 5, 6, 5)
@@ -334,7 +334,7 @@ partition <- leiden(multiplex_graph, partition_type = "ModularityVertexPartition
 ## ---------------------------------------------------------------------------------------------------------------------
 table(partition)
 
-## ---- warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
+## ----warning=FALSE, message=FALSE, fig.align='center', out.width="80%",fig.height = 6, fig.width = 6, fig.retina=1.5----
 library("graphsim")
 library("RColorBrewer")
 node.cols <- brewer.pal(max(c(8, partition)),"Pastel1")[partition]
